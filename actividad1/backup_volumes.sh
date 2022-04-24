@@ -2,18 +2,17 @@
 
 set -e
 
-if [ $( docker ps -a | grep drupal | wc -l ) -gt 0 ]; then
-    echo "Creating drupal backup ..."
-    docker run --rm --volumes-from drupal -v $(pwd):/backup busybox tar cf /backup/drupal_backup.tar /var/www/html
-    echo "Drupal backup created correctly."
-else
-    echo "Drupal container is missing"
-fi
+drupal_dir=/var/www/html
+db_dir=/var/lib/mysql
 
-if [ $( docker ps -a | grep db | wc -l ) -gt 0 ]; then
-    echo "Creating db backup ..."
-    docker run --rm --volumes-from db -v $(pwd):/backup busybox tar cf /backup/db_backup.tar /var/lib/mysql
-    echo "DB backup created correctly."
-else
-    echo "DB container is missing"
-fi
+for value in drupal db
+do
+    if [ $( docker ps -a | grep $value | wc -l ) -gt 0 ]; then
+        echo "Creating $value backup ..."
+        dir="${value}_dir"
+        docker run --rm --volumes-from $value -v $(pwd):/backup busybox tar cf /backup/${value}_backup.tar ${!dir}
+        echo "$value backup created correctly."
+    else
+        echo "$value container is missing."
+    fi    
+done
