@@ -2,11 +2,19 @@
 
 set -e
 
+drupal_dir=/var/www/html
+db_dir=/var/lib/mysql
+
 echo "Creating containers if missing ..."
 docker-compose up --no-start
-for value in drupal db
+
+echo "Restoring drupal backup ..."
+for folder in modules profiles sites themes
 do
-    echo "Restoring $value backup ..."
-    docker run --rm --volumes-from $value -v $(pwd):/backup busybox tar xf /backup/${value}_backup.tar
-    echo "$value backup restored correctly."
+    docker run --rm --volumes-from drupal -v $(pwd):/backup busybox sh -c "cd ${drupal_dir}/$folder && tar xf /backup/drupal_${folder}_backup.tar"
 done
+echo "drupal backup restored correctly."
+
+echo "Restoring db backup ..."
+docker run --rm --volumes-from db -v $(pwd):/backup busybox sh -c "cd $db_dir && tar xf /backup/db_backup.tar"
+echo "db backup restored correctly."

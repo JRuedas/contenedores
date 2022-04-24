@@ -8,7 +8,10 @@ services:
     ports:
       - 8080:80
     volumes:
-      - drupal-data:/var/www/html
+      - drupal-modules:/var/www/html/modules
+      - drupal-profiles:/var/www/html/profiles
+      - drupal-sites:/var/www/html/sites
+      - drupal-themes:/var/www/html/themes
     depends_on:
       - db
     restart: always
@@ -27,5 +30,8 @@ services:
     restart: always
 
 volumes:
-  drupal-data:
+  drupal-modules:
+  drupal-profiles:
+  drupal-sites:
+  drupal-themes:
   db-data:
