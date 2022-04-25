@@ -20,11 +20,8 @@ services:
     container_name: db
     hostname: db.local
     command: --default-authentication-plugin=mysql_native_password
-    environment:
-      - MYSQL_DATABASE=drupal
-      - MYSQL_USER=drupal-user
-      - MYSQL_PASSWORD=drupal-pass
-      - MYSQL_ROOT_PASSWORD=root-pass
+    env_file:
+      - db.env
     volumes:
       - db-data:/var/lib/mysql
     restart: always
